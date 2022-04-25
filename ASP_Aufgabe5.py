@@ -10,7 +10,7 @@ def kron(i,j):
 		return 0
 
 # numbers taken from table 2 in J. Stigler et al, Science 334 513 (2011) https://doi.org/10.1126/science.1207598
-# no errors
+# no errors included in the values
 
 rates = np.array([
 	[0, 10**5.8, 10**5.8, 0, 10**5.4, 0],
