@@ -15,10 +15,12 @@ def kron(i,j):
 rates = np.array([
 	[0, 10**5.8, 10**5.8, 0, 10**5.4, 0],
 	[10**-4.1, 0, 0, 10**5.6, 0, 0],
-	[10**(-5), 0, 0, 10**5, 0, 10**5],
+	[10**-5, 0, 0, 10**5, 0, 10**5],
 	[0, 10**(-0.8), 10**(-.7), 0, 0, 0],
 	[10**(-1.4), 0, 0, 0, 0, 0],
 	[0, 0, 10**(-0.13), 0, 0, 0]])
+
+
 
 # STEP 1 ON THE PROBLEM SHEET
 
@@ -55,32 +57,60 @@ def lifetime(I, L):
 def nextState(I, L): # it needs the generator matrix L and the initial state I
 	r2 = np.float64(random.uniform(0,1))
 	probIJ = [0,0,0,0,0,0] # i just need this to have 6 elements
+	#print("Ich bin in der Function: ", L)
 	for J in range(0, 6):
 		if J == I:
 			probIJ[J] = np.float64(0)
 		else:
 			#print(L[I,I])
 			probIJ[J] = -1. * L[J,I]/L[I,I] # probability that the state I goes to J
-	helper = np.float64(0)
-	for i in range(0,6):
-		if helper <= r2:
-			helper = helper + probIJ[i]
-		else:
-			#print(i, helper, r2)
-			return int(i-1)
-			break
+	partition = np.float64(0)
+	#print(r2, sum(probIJ))
+	if r2 <= sum(probIJ):
+		for i in range(0,6):
+			partition = partition + probIJ[i]
+			if r2 <= partition:
+				return i
+				#if i == 5:
+				#	return 5
+			elif partition < r2 and i < 5:
+				continue
+			else:
+				return i
+	else:
+		#print("Ich bin hier")
+		return I
 
-I = 0
+i = 0
 t = 0
 
-#print(np.diagonal(L))
-#print(nextState(I,L))
-helpme = 0
-while I != 3:
-	t = t + lifetime(I,L)
-	helpme = nextState(I,L)
-	I = helpme
-	print(I, helpme)
-	#I = nextState(I,L)
+
+time = []
+
+while j <= 10**6:
+	while i != 3:
+		i = nextState(i, L)
+		t = t + lifetime(i, L)
+	time.append(t)
+	j = j+1
+	i = 0
+	t = 0	
+logbins = np.logspace(np.log10(10**-8),np.log10(10**3),10**4)
+plt.hist(time, logbins)
+plt.xscale("log")
+plt.xlim(10**-8, 10**3)
+plt.show()
+
+"""
+while 1==1:
+	if i % 3 == 0:
+		break
+	else:
+		t = t + lifetime(i,L)
+		helpme = nextState(i,L)
+		i = helpme
+		print("ich bin in der while schleife: ", i, helpme)
+		#I = nextState(I,L)
+		continue"""
 	
 
