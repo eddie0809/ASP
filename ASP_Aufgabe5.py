@@ -1,7 +1,14 @@
 import numpy as np
-import math
 import random
+import matplotlib as mpl
 import matplotlib.pyplot as plt
+
+# for using tex formatting and font in plots
+
+plt.rcParams.update({"text.usetex": True,}) 
+mpl.rcParams['text.latex.preamble'] = [r'\usepackage[utf8]{inputenc}\usepackage[T1]{fontenc}\usepackage{lmodern}\inputencoding{utf8}\usepackage{amsmath}\usepackage{amssymb}\usepackage{mathtools}']
+mpl.rcParams['font.family'] = ['serif']
+
 
 def kron(i,j):
 	if i == j:
@@ -21,23 +28,19 @@ rates = np.array([
 	[0, 0, 10**(-0.13), 0, 0, 0]])
 
 
-
 # STEP 1 ON THE PROBLEM SHEET
 
-I = 0
-t = 0
 L = np.zeros((6,6))
 
 for i in range(0,6):
 	sumdings = 0
 	for j in range(0,6):
 		for k in range(0,6): # although the sum is k =/= i, for k = i the matrix returns 0 so it doesnt matter
-			#print(i, j, k)
 			sumdings = sumdings + rates[i][k]
-		#print(kron(i,j), i, j)
 		L[i,j] = (1 - kron(i,j)) * rates[j][i] - kron(i,j) * sumdings
-		# above calculation follows the instructions on the problem sheet:
 		# [L]_{i,j} = (1 - δ_{ij})w_{ji} - δ_{ij}Σ_{k≠i}w_{ik}
+		sumdings = 0
+		
 
 
 # STEP 2 ON THE PROBLEM SHEET
@@ -46,7 +49,7 @@ for i in range(0,6):
 
 
 def lifetime(I, L):
-	r1 = random.uniform(0,1)
+	r1 = np.float64(random.uniform(0,1))
 	gamma = -1. * np.diagonal(L) # decay rate
 	tau = 1/gamma[I] * np.log(1/r1) # lifetime, randomly generated
 	return tau
@@ -54,65 +57,53 @@ def lifetime(I, L):
 
 # STEP 3 ON THE PROBLEM SHEET
 
-# DECIDING THE NEXT STATE
-
 
 def nextState(I, L): # it needs the generator matrix L and the initial state I
 	r2 = np.float64(random.uniform(0,1))
 	probIJ = [0,0,0,0,0,0] # i just need this to have 6 elements
-	#print("Ich bin in der Function: ", L)
 	for J in range(0, 6):
 		if J == I:
-			probIJ[J] = np.float64(0)
+			probIJ[J] = np.float64(0) # this breaks if its not float64, dont ask why
 		else:
-			#print(L[I,I])
 			probIJ[J] = -1. * L[J,I]/L[I,I] # probability that the state I goes to J
-	partition = np.float64(0)
-	#print(r2, sum(probIJ))
-	if r2 <= sum(probIJ):
-		for i in range(0,6):
-			partition = partition + probIJ[i]
-			if r2 <= partition:
-				return i
-				#if i == 5:
-				#	return 5
-			elif partition < r2 and i < 5:
-				continue
-			else:
-				return i
-	else:
-		#print("Ich bin hier")
-		return I
+	partition = np.float64(0) # see above
+	r2 = np.float64(random.uniform(0,sum(probIJ)))
+	for i in range(0,6):
+		partition = partition + probIJ[i]
+		if r2 <= partition:
+			return i
+		elif partition < r2 and i < 5:
+			continue
+		else:
+			return i
 
-i = 0
-t = 0
-
-
+I = 0 # this is actually part of step 1, but for me it makes more sense to do it here
+t = 0 # - " - 
+j = 0
 time = []
-
-while j <= 10**6: # simulating 10^6 trajectories
-	while i != 3:
-		i = nextState(i, L)
-		t = t + lifetime(i, L)
+while j <= 10**7: # number of trajectories simulated, here i use 1e7, required are 1e6
+	while I != 3:
+		t = t + lifetime(I, L)
+		I = nextState(I, L)
+	print(np.log10(j)) # i like to see the progress x)
 	time.append(t)
 	j = j+1
-	i = 0
-	t = 0	
+	I = 0
+	t = 0
+
 logbins = np.logspace(np.log10(10**-8),np.log10(10**3),10**4) # create bins with logarithmic scaling
 plt.hist(time, logbins)
 plt.xscale("log") # logarithmic timescale to compare with S13 on supplementary materials of the paper
+plt.xlabel("Folding time [s]")
+#plt.tick_params(axis='both', which='both', bottom='off', top='off', labelbottom='off', right='off', left='off', labelleft='off')
+plt.tick_params(
+    axis='y',         # changes apply to the y-axis
+    which='both',     # both major and minor ticks are affected
+    right=False,      # ticks along the right edge are off
+    left=False,       # ticks along the left edge are off
+    labelleft=False)  # labels along the left edge are off
 plt.xlim(10**-8, 10**3)
+plt.ylabel("Probability [AU]")
 plt.show()
-
-"""
-while 1==1:
-	if i % 3 == 0:
-		break
-	else:
-		t = t + lifetime(i,L)
-		helpme = nextState(i,L)
-		i = helpme
-		print("ich bin in der while schleife: ", i, helpme)
-		#I = nextState(I,L)
-		continue"""
 	
+
