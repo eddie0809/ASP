@@ -36,7 +36,8 @@ for i in range(0,6):
 			sumdings = sumdings + rates[i][k]
 		#print(kron(i,j), i, j)
 		L[i,j] = (1 - kron(i,j)) * rates[j][i] - kron(i,j) * sumdings
-		
+		# above calculation follows the instructions on the problem sheet:
+		# [L]_{i,j} = (1 - δ_{ij})w_{ji} - δ_{ij}Σ_{k≠i}w_{ik}
 
 
 # STEP 2 ON THE PROBLEM SHEET
@@ -47,11 +48,13 @@ for i in range(0,6):
 def lifetime(I, L):
 	r1 = random.uniform(0,1)
 	gamma = -1. * np.diagonal(L) # decay rate
-	tau = 1/gamma[I] * np.log(1/r1) # lifetime
+	tau = 1/gamma[I] * np.log(1/r1) # lifetime, randomly generated
 	return tau
 
 
 # STEP 3 ON THE PROBLEM SHEET
+
+# DECIDING THE NEXT STATE
 
 
 def nextState(I, L): # it needs the generator matrix L and the initial state I
@@ -87,7 +90,7 @@ t = 0
 
 time = []
 
-while j <= 10**6:
+while j <= 10**6: # simulating 10^6 trajectories
 	while i != 3:
 		i = nextState(i, L)
 		t = t + lifetime(i, L)
@@ -95,9 +98,9 @@ while j <= 10**6:
 	j = j+1
 	i = 0
 	t = 0	
-logbins = np.logspace(np.log10(10**-8),np.log10(10**3),10**4)
+logbins = np.logspace(np.log10(10**-8),np.log10(10**3),10**4) # create bins with logarithmic scaling
 plt.hist(time, logbins)
-plt.xscale("log")
+plt.xscale("log") # logarithmic timescale to compare with S13 on supplementary materials of the paper
 plt.xlim(10**-8, 10**3)
 plt.show()
 
@@ -113,4 +116,3 @@ while 1==1:
 		#I = nextState(I,L)
 		continue"""
 	
-
