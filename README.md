@@ -11,14 +11,13 @@ this is really just for me to switch everything around from diff devices and to 
 
 #### possible future stuff:
 - full solutions to problems
-- lecture transcript
 
-Full solutions only when i have full correct solutions. I don't even know why I would upload that, without the context of the problems themselves.
+I don't even know why I would upload that, without the context of the problems themselves.
 
-The lecture transcript is only mine. I'm reluctant tho, because the prof wants to publish his magnum opus on statistical physics, which is the book to this lecture, possibly later this decade. If i were to publish my notes, part of it would be freely available. so this is unlikely.
+.
 
 #### will never upload:
 - official script
 - problems themselves
 
-This is pretty self-explanatory
+The lecture transcript and official script I won't upload, because the prof wants to publish his magnum opus on statistical physics, which is the book to this lecture, possibly later this decade. If i were to publish my notes, part of it would be freely available, so i won't upload my transcript.
